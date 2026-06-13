@@ -22,6 +22,21 @@ export async function getOrCreateGuestSession(displayName?: string) {
   }
 
   const name = displayName?.trim() || "Guest";
+
+  // Demo convenience: if a seeded guest exists for this name, adopt it so the
+  // pre-populated demo trip is visible. Scoped to demo tokens only.
+  const demoToken = `${name.toLowerCase()}-demo-session-token`;
+  const demoGuest = await prisma.guest.findUnique({ where: { sessionToken: demoToken } });
+  if (demoGuest) {
+    cookieStore.set(SESSION_COOKIE, demoToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    return demoGuest;
+  }
+
   const sessionToken = nanoid(32);
   const guest = await prisma.guest.create({
     data: { displayName: name, sessionToken },
