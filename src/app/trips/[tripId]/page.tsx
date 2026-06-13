@@ -19,6 +19,7 @@ import { GuestGate, getStoredDisplayName } from "@/components/guest-gate";
 import { PresenceBanner, usePresence } from "@/components/presence";
 import { ExpensesTab } from "@/components/expenses-tab";
 import { FlightsTab } from "@/components/flights-tab";
+import { InviteLink } from "@/components/invite-link";
 import { RentalsTab } from "@/components/rentals-tab";
 import { StaysTab } from "@/components/stays-tab";
 import { TransfersTab } from "@/components/transfers-tab";
@@ -187,22 +188,19 @@ function TripDashboardContent() {
 
   return (
     <div className="animate-fade-in space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <TripSectionNav sections={tabs} activeId={tab} onChange={(id) => setTab(id as Tab)} />
+      <div className="sticky top-16 z-30 -mx-4 flex items-center gap-2 bg-[#f6f5f2]/90 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className="min-w-0 flex-1">
+          <TripSectionNav sections={tabs} activeId={tab} onChange={(id) => setTab(id as Tab)} />
+        </div>
         {canEdit && (
-          <Button variant="secondary" size="sm" onClick={createInvite}>
+          <Button variant="secondary" size="sm" onClick={createInvite} className="shrink-0">
             <Copy className="mr-2 h-4 w-4" />
             Invite
           </Button>
         )}
       </div>
 
-      {inviteUrl && (
-        <Card className="border-brand-200 bg-brand-50/50 py-3">
-          <p className="text-sm font-medium text-brand-900">Share this invite link:</p>
-          <code className="mt-1 block break-all text-xs text-brand-800">{inviteUrl}</code>
-        </Card>
-      )}
+      {inviteUrl && <InviteLink url={inviteUrl} />}
 
       <TripSummaryCard
         trip={trip}
@@ -331,9 +329,8 @@ function MembersTab({
         ))}
       </ul>
       {inviteUrl && (
-        <div className="mt-4 rounded-lg bg-brand-50 p-3 text-sm">
-          <p className="font-medium">Invite link</p>
-          <code className="mt-1 block break-all">{inviteUrl}</code>
+        <div className="mt-4">
+          <InviteLink url={inviteUrl} />
         </div>
       )}
     </Card>

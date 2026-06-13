@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 export type TripSection = {
@@ -19,61 +18,43 @@ export function TripSectionNav({
   activeId: string;
   onChange: (id: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const active = sections.find((s) => s.id === activeId) ?? sections[0];
+  const listRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef<HTMLButtonElement>(null);
 
+  // Keep the active tab in view when it changes (helpful on mobile horizontal scroll).
   useEffect(() => {
-    function handleClick(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
+    activeRef.current?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }, [activeId]);
 
   return (
-    <div ref={rootRef} className="relative inline-block">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-brand-700"
-        aria-expanded={open}
-        aria-haspopup="listbox"
-      >
-        {active.icon}
-        {active.label}
-        <ChevronDown className={cn("h-4 w-4 opacity-80 transition", open && "rotate-180")} />
-      </button>
-
-      {open && (
-        <ul
-          className="absolute left-0 z-50 mt-2 max-h-80 w-56 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl"
-          role="listbox"
-        >
-          {sections.map((section) => (
-            <li key={section.id}>
-              <button
-                type="button"
-                role="option"
-                aria-selected={section.id === activeId}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm",
-                  section.id === activeId
-                    ? "bg-brand-50 font-medium text-brand-800"
-                    : "text-slate-700 hover:bg-brand-50"
-                )}
-                onClick={() => {
-                  onChange(section.id);
-                  setOpen(false);
-                }}
-              >
-                {section.icon}
-                {section.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div
+      ref={listRef}
+      role="tablist"
+      aria-label="Trip sections"
+      className="flex w-full items-center gap-1 overflow-x-auto rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {sections.map((section) => {
+        const isActive = section.id === activeId;
+        return (
+          <button
+            key={section.id}
+            ref={isActive ? activeRef : undefined}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange(section.id)}
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition",
+              isActive
+                ? "bg-brand-600 text-white shadow-sm"
+                : "text-slate-600 hover:bg-brand-50 hover:text-brand-800"
+            )}
+          >
+            <span className={cn(isActive ? "text-white" : "text-slate-400")}>{section.icon}</span>
+            {section.label}
+          </button>
+        );
+      })}
     </div>
   );
 }

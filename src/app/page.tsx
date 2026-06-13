@@ -142,10 +142,26 @@ function HomeContent() {
         </div>
 
         {loading ? (
-          <p className="text-slate-500">Loading trips...</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <TripCardSkeleton key={i} />
+            ))}
+          </div>
         ) : trips.length === 0 ? (
-          <Card className="text-center">
-            <p className="text-slate-600">No trips yet. Create one or join via an invite link.</p>
+          <Card className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-100 text-brand-700">
+              <Plane className="h-6 w-6" />
+            </span>
+            <div>
+              <p className="font-semibold text-slate-800">No trips yet</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Start planning your first adventure, or join one with an invite link.
+              </p>
+            </div>
+            <Button onClick={() => setShowForm(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create your first trip
+            </Button>
           </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -190,6 +206,24 @@ function HomeContent() {
         )}
       </section>
     </div>
+  );
+}
+
+function TripCardSkeleton() {
+  return (
+    <Card className="h-full animate-pulse">
+      <div className="flex items-start justify-between gap-2">
+        <div className="h-5 w-32 rounded bg-slate-200" />
+        <div className="h-5 w-12 rounded-full bg-slate-200" />
+      </div>
+      <div className="mt-3 h-4 w-40 rounded bg-slate-100" />
+      <div className="mt-3 h-4 w-48 rounded bg-slate-100" />
+      <div className="mt-4 flex gap-3">
+        <div className="h-3 w-10 rounded bg-slate-100" />
+        <div className="h-3 w-12 rounded bg-slate-100" />
+        <div className="h-3 w-10 rounded bg-slate-100" />
+      </div>
+    </Card>
   );
 }
 
